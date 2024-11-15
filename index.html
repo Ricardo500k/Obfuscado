@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Compilador SA-MP</title>
+</head>
+<body>
+    <h1>Compilador de Gamemode SA-MP</h1>
+    <form id="uploadForm" enctype="multipart/form-data">
+        <label for="pwnFile">Escolha o arquivo .pwn para compilar:</label>
+        <input type="file" id="pwnFile" name="pwnFile" accept=".pwn" required>
+        <button type="submit">Compilar e Enviar para Discord</button>
+    </form>
+
+    <div id="status"></div>
+
+    <script>
+        document.getElementById('uploadForm').addEventListener('submit', async function(event) {
+            event.preventDefault();
+
+            const formData = new FormData();
+            const fileInput = document.getElementById('pwnFile');
+
+            if (fileInput.files.length > 0) {
+                formData.append('pwnFile', fileInput.files[0]);
+
+                const statusDiv = document.getElementById('status');
+                statusDiv.textContent = 'Enviando arquivo para compilação...';
+
+                try {
+                    const response = await fetch('http://localhost:3000/compile', {
+                        method: 'POST',
+                        body: formData,
+                    });
+
+                    const result = await response.text();
+                    statusDiv.textContent = result;
+                } catch (error) {
+                    statusDiv.textContent = 'Erro ao compilar o arquivo.';
+                }
+            }
+        });
+    </script>
+</body>
+</html>

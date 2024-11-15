@@ -1,0 +1,15 @@
+{
+  "name": "gm-samp-compiler",
+  "version": "1.0.0",
+  "description": "Compilador de código GM SA-MP para AMX",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js"
+  },
+  "dependencies": {
+    "pawn-compiler": "^1.0.0"
+  },
+  "devDependencies": {},
+  "author": "Seu Nome",
+  "license": "ISC"
+}
